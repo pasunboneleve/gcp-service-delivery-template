@@ -8,8 +8,6 @@ on:
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
-  GCP_SERVICE_NAME: blog
-  GCP_REPO: blog
 
 jobs:
   deploy:
@@ -20,8 +18,13 @@ jobs:
       id-token: 'write'
 
     steps:
+
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: Load deploy env
+      run: |
+        grep -v '^[[:space:]]*#' deploy.env | grep -v '^[[:space:]]*$' >> "$GITHUB_ENV"
 
     - name: Google Auth
       id: auth

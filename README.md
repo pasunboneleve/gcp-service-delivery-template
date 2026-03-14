@@ -146,15 +146,18 @@ scripts/bootstrap-tf-state.sh
 
     - service configuration
 
-5. Apply the infrastructure:
+5. Copy `deploy.env.template` to `deploy.env` in the repository root,
+   update the values, and commit `deploy.env` to the repository.
+
+6. Apply the infrastructure:
 
 ```bash
 terraform apply
 ```
 
-6. Add application source code and a `Dockerfile` to the repository.
+7. Add application source code and a `Dockerfile` to the repository.
 
-7. Push to `main`.
+8. Push to `main`.
 
 The GitHub Actions workflow will build the container image and deploy
 it to Cloud Run.
