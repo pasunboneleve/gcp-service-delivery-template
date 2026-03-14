@@ -21,7 +21,7 @@ export GCS_BUCKET=<globally-unique-bucket-name>
 cd infra
 terraform init \
   -backend-config="bucket=$GCS_BUCKET" \
-  -backend-config="prefix=gcp-rust-blog/infra"
+  -backend-config="prefix=<your-desired-prefix>/infra"
 ```
 
 ## 3) Apply
