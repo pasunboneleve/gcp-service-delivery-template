@@ -1,20 +1,21 @@
 Minimal GCP Delivery Platform
 =============================
 
-This repository demonstrates a minimal delivery platform for
+This repository defines a minimal, opinionated delivery platform for
 containerized services running on Google Cloud.
 
-It establishes a secure and reproducible workflow for building,
-testing and deploying applications using GitHub Actions,
-Terraform/OpenTofu, and Google Cloud. The goal is to ensure that new
-services start with a working delivery pipeline and infrastructure
-layout from day one, allowing developers to focus on application logic
-rather than deployment mechanics.
+It establishes a secure, reproducible path from commit to production
+using GitHub Actions, Terraform/OpenTofu, and Cloud Run. New services
+start with a working delivery pipeline, infrastructure baseline, and
+authentication model from day one — allowing developers to focus on
+application logic rather than platform setup.
 
-The template can be cloned or adapted as the starting point for a new
-service repository.
+This is not just a template, but a small, intentional "paved road" for
+service delivery. It encodes the minimum viable platform required to
+deploy production services without unnecessary complexity.
 
----
+The repository can be cloned or adapted as the starting point for a new
+service.
 
 Capabilities provided
 ---------------------
@@ -43,8 +44,6 @@ service delivery:
 By cloning this repository, a new service immediately gains a working
 delivery pipeline and secure cloud authentication model.
 
----
-
 Architecture overview
 ---------------------
 
@@ -72,8 +71,6 @@ Deploy to Cloud Run
 Infrastructure required for this workflow is provisioned using
 Terraform/OpenTofu.
 
----
-
 Repository structure
 --------------------
 
@@ -88,8 +85,6 @@ Repository structure
 
 - `.env.template` and `.envrc` Local developer environment
   configuration using direnv.
-
----
 
 ### `infra/`
 
@@ -115,8 +110,6 @@ Main files include:
 - `bigquery.tf` – example dataset provisioning
 
 - `DEPLOYMENT.md` – step-by-step deployment instructions
-
----
 
 Bootstrapping a new project
 ---------------------------
@@ -162,8 +155,6 @@ terraform apply
 The GitHub Actions workflow will build the container image and deploy
 it to Cloud Run.
 
----
-
 Assumptions
 -----------
 
@@ -180,21 +171,20 @@ This template assumes:
 
 - Terraform/OpenTofu manages infrastructure
 
----
-
 Scope
 -----
+
 This repository is intentionally minimal.
 
-It focuses on establishing the core delivery pipeline and secure
-authentication model required to deploy containerized services to
-Google Cloud.
+It defines the smallest viable platform required to securely build,
+deploy, and run containerized services on Google Cloud.
 
-Additional concerns such as load balancing, DNS configuration, service
-meshes, or multi-environment deployment can be layered on top of this
-foundation as required.
+The goal is to provide a complete and production-usable delivery path
+without introducing platform complexity prematurely.
 
----
+Concerns such as load balancing, DNS, multi-environment promotion, or
+service mesh are deliberately excluded and can be layered on top as
+needed.
 
 Design principles
 -----------------
@@ -219,16 +209,12 @@ A working deployment pipeline should exist at the start of a project
 rather than being added later. This reduces friction as the system
 grows.
 
-### Minimal but extensible
+### Minimal by design, extensible by necessity
 
-The template intentionally provisions only the resources required for
-a basic delivery pipeline. Additional capabilities such as load
-balancing, DNS, or multiple environments can be layered on later.
-
----
-
-License
-
-MIT
+The template provisions only the capabilities required for a working
+delivery pipeline. Additional concerns should be introduced when they
+are needed, not before.
 
 ---
+
+License: MIT
