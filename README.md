@@ -17,32 +17,41 @@ deploy production services without unnecessary complexity.
 The repository can be cloned or adapted as the starting point for a new
 service.
 
+⚠️ Important: CI/CD requires project setup
+---------------------------------------
+
+This repository is a template and is not connected to a live Google Cloud
+project by default.
+
+As a result, the GitHub Actions workflow will fail until:
+
+- Workload Identity Federation is configured
+- Required GitHub secrets are created
+- Terraform has been applied to provision infrastructure
+
+This is expected.
+
+Follow the bootstrapping steps below to activate the delivery pipeline.
+
 Capabilities provided
 ---------------------
 
 This repository provides a minimal internal platform capability for
 service delivery:
 
-* Secure GitHub → Google Cloud authentication using Workload Identity
+- Secure GitHub → Google Cloud authentication using Workload Identity
   Federation (OIDC), avoiding long-lived service account keys
-
-* Infrastructure provisioning with Terraform/OpenTofu
-
-* Remote Terraform state stored in Google Cloud Storage with
+- Infrastructure provisioning with Terraform/OpenTofu
+- Remote Terraform state stored in Google Cloud Storage with
   versioning
+- Automated container build and deployment using GitHub Actions
+- Container registry provisioning using Artifact Registry
+- Cloud Run deployment workflow
+- Standard infrastructure layout for new services
+- Example BigQuery dataset provisioning
 
-* Automated container build and deployment using GitHub Actions
-
-* Container registry provisioning using Artifact Registry
-
-* Cloud Run deployment workflow
-
-* Standard infrastructure layout for new services
-
-* Example BigQuery dataset provisioning
-
-By cloning this repository, a new service immediately gains a working
-delivery pipeline and secure cloud authentication model.
+By cloning this repository, a new service gains a reproducible path to a
+working delivery pipeline and secure cloud authentication model.
 
 Architecture overview
 ---------------------
@@ -93,22 +102,14 @@ Contains infrastructure definitions and deployment documentation.
 Main files include:
 
 - `main.tf` – core Google Cloud infrastructure
-
 - `variables.tf` – required configuration inputs
-
 - `providers.tf` – provider configuration
-
 - `versions.tf` – Terraform/OpenTofu version constraints
-
 - `backend.tf` – remote state configuration
-
 - `outputs.tf` – useful outputs such as service account identities
-
 - `github_secrets.tf` – GitHub Actions secrets managed through
   Terraform
-
 - `bigquery.tf` – example dataset provisioning
-
 - `DEPLOYMENT.md` – step-by-step deployment instructions
 
 Bootstrapping a new project
@@ -129,15 +130,11 @@ scripts/bootstrap-tf-state.sh
 4. Create a `.tfvars` file based on the provided template and
    configure:
 
-    - project ID
-
-    - project number
-
-    - region
-
-    - GitHub repository
-
-    - service configuration
+   - project ID
+   - project number
+   - region
+   - GitHub repository
+   - service configuration
 
 5. Copy `deploy.env.template` to `deploy.env` in the repository root,
    update the values, and commit `deploy.env` to the repository.
@@ -161,14 +158,10 @@ Assumptions
 This template assumes:
 
 - application code and Dockerfile live in the repository root
-
 - deployment targets Google Cloud Run
-
 - GitHub Actions is used as the CI/CD system
-
 - authentication to Google Cloud uses OIDC via Workload Identity
   Federation
-
 - Terraform/OpenTofu manages infrastructure
 
 Scope
