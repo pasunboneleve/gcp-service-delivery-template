@@ -19,6 +19,13 @@ jobs:
 
     steps:
 
+     - name: Check configuration
+       run: |
+         if [ -z "${{ secrets.GCP_PROJECT_ID }}" ]; then
+           echo "This is a template repository. Configure GCP and GitHub secrets before running CI."
+           exit 1
+         fi
+
     - name: Checkout
       uses: actions/checkout@v3
 
