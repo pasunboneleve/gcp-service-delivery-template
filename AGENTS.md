@@ -7,30 +7,27 @@ This file provides guidance to AI agents when working with code in this reposito
 ### GCP Deployment Commands
 Set required environment variables first:
 ```bash
-export PROJECT_ID={{GCP_PROJECT_ID}}
-export GCP_REGION={{GCP_REGION}}
-export REPO=<github-repo>
+cp .env.template .env
+cp infra/prod.tfvars.template infra/prod.tfvars
+direnv allow
 ```
 
 ### Infrastructure Management
 Bootstrap Terraform state (one-time):
 ```bash
-PROJECT_ID={{GCP_PROJECT_ID}} GCS_BUCKET={{YOUR_TF_STATE_BUCKET}} ./scripts/bootstrap-tf-state.sh
+./scripts/bootstrap-tf-state.sh
 ```
 
 Apply infrastructure:
 ```bash
 cd infra
-terraform init -backend-config="bucket={{YOUR_TF_STATE_BUCKET}}" -backend-config="prefix={{GCP_PROJECT_ID}}/infra"
-terraform apply \
-  -var="project_id={{GCP_PROJECT_ID}}" \
-  -var="project_number={{GCP_PROJECT_NUMBER}}" \
-  -var="pool_id={{GCP_WORKLOAD_IDENTITY_POOL}}" \
-  -var="provider_id={{GCP_WORKLOAD_IDENTITY_PROVIDER}}" \
-  -var="github_owner=<github_owner>" \
-  -var="github_repo={{REPO}}" \
-  -var="cloud_run_url={{CLOUD_RUN_SERVICE_URL}}"
+tofu init -backend-config="bucket={{GCS_BUCKET}}" -backend-config="prefix={{GCP_PROJECT_ID}}/infra"
+tofu apply
 ```
+
+`direnv reload` or `direnv refresh` also refreshes `GITHUB_TOKEN` from
+`gh auth token` when GitHub CLI authentication is available. GitHub user
+tokens expire, so rerun `gh auth login` when refresh stops yielding a token.
 
 ## Architecture Overview
 

@@ -8,6 +8,7 @@ This folder provisions:
 ## Prereqs
 - gcloud (authenticated to the target project)
 - Terraform/OpenTofu 1.5+
+- GitHub CLI or a `GITHUB_TOKEN` exported in your shell for the GitHub provider
 
 ## 1) Create a remote state bucket (one-time)
 ```bash
@@ -19,22 +20,24 @@ export GCS_BUCKET=<globally-unique-bucket-name>
 ## 2) Init with GCS backend
 ```bash
 cd infra
-terraform init \
+tofu init \
   -backend-config="bucket=$GCS_BUCKET" \
-  -backend-config="prefix=<your-desired-prefix>/infra"
+  -backend-config="prefix=$GCP_PROJECT_ID/infra"
 ```
 
 ## 3) Apply
-Set values matching your environment:
+Copy `prod.tfvars.template` to `prod.tfvars` and set values matching your
+environment:
 ```bash
-terraform apply \
-  -var="project_id=<GCP_PROJECT_ID>" \
-  -var="project_number=<PROJECT_NUMBER>" \
-  -var="pool_id=github-pool" \
-  -var="provider_id=github-provider" \
-  -var="github_owner=<GITHUB_OWNER>" \
-  -var="github_repo=<GITHUB_REPO>"
-# Note: service_account_email is automatically constructed from project_id
+cp prod.tfvars.template prod.tfvars
+tofu apply
 ```
 
 Outputs will include the WIF resource names.
+
+`direnv` is expected to export `TF_CLI_ARGS_plan`, `TF_CLI_ARGS_apply`,
+and `TF_CLI_ARGS_destroy` so `tofu` automatically uses `infra/prod.tfvars`.
+If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
+and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
+GitHub user tokens expire, so rerun `gh auth login` when refresh stops
+producing a token.

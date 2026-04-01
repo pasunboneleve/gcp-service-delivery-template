@@ -3,25 +3,44 @@
 ### Install dependencies
 
 - [direnv](https://direnv.net/)
-- [open tofu](https://opentofu.org/)
+- [OpenTofu](https://opentofu.org/) or Terraform
+- [GitHub CLI](https://cli.github.com/) if you want direnv to refresh `GITHUB_TOKEN`
 
 ### Set environment variables
 
 ```bash
 cp .env.template .env
 cp infra/prod.tfvars.template infra/prod.tfvars
-```
-and fill the details in the these new files. Then run
-
-```bash
 direnv allow
 ```
 
-if you need to reload the environment variables, use
+Define local shell-only values in `.env`:
 
-```bash
-direnv reload
-```
+- `GCP_PROJECT_ID`
+- `GCP_REGION`
+- `GCS_BUCKET`
+- optional `GITHUB_TOKEN` fallback
+
+Define Terraform inputs in `infra/prod.tfvars`:
+
+- `gcp_owner`
+- `repository_id`
+- `project_id`
+- `project_number`
+- `region`
+- `pool_id`
+- `provider_id`
+- `service_name`
+- `github_owner`
+- `github_repo`
+- `cloud_run_url`
+
+With direnv loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
+automatically use `infra/prod.tfvars`.
+If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
+and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
+GitHub user tokens expire, so rerun `gh auth login` when refresh stops
+producing a token.
 
 ### Initial Infrastructure Setup
 
@@ -38,7 +57,7 @@ tofu init -backend-config="bucket=$GCS_BUCKET" -backend-config="prefix=$GCP_PROJ
 
 4. **Apply infrastructure**:
 ```bash
-tofu apply -var-file="prod.tfvars"
+tofu apply
 ```
 
 ### Administrative Operations

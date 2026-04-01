@@ -33,6 +33,11 @@ variable "provider_id" {
   type        = string
 }
 
+variable "service_name" {
+  description = "Cloud Run service name used by the deploy workflow"
+  type        = string
+}
+
 variable "github_owner" {
   description = "GitHub organization or user"
   type        = string
@@ -46,10 +51,4 @@ variable "github_repo" {
 variable "cloud_run_url" {
   description = "Cloud Run service URL for CNAME record. Find this in Google Cloud Console: Cloud Run > [service-name] > copy the URL from the service details page (e.g., service-name-hash.region.run.app)"
   type        = string
-}
-
-variable "github_token" {
-  description = "GitHub Personal Access Token with repo scope for managing repository secrets"
-  type        = string
-  sensitive   = true
 }

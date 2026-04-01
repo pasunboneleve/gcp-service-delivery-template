@@ -2,7 +2,7 @@
 .aider*
 
 
-# Secrets
+# Secrets and local environment files
 **/*.tfvars
 **/.env
 

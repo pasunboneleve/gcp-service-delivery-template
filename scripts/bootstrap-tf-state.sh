@@ -8,7 +8,7 @@ set -euo pipefail
 
 : "${GCP_PROJECT_ID:?Set GCP_PROJECT_ID}"
 : "${GCS_BUCKET:?Set GCS_BUCKET}"
-LOCATION=${LOCATION:-us-central1}
+GCP_REGION=${GCP_REGION:-us-central1}
 RETENTION_DAYS=${RETENTION_DAYS:-30}
 
 echo "Creating bucket gs://${GCS_BUCKET} in ${GCP_REGION} (if not exists)"

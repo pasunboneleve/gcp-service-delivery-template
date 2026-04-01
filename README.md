@@ -26,7 +26,7 @@ project by default.
 As a result, the GitHub Actions workflow will fail until:
 
 - Workload Identity Federation is configured
-- Required GitHub secrets are created
+- Required GitHub Actions variables are configured
 - Terraform has been applied to provision infrastructure
 
 This is expected.
@@ -93,7 +93,8 @@ Repository structure
   pushes it to Artifact Registry, and deploys it to Cloud Run.
 
 - `.env.template` and `.envrc` Local developer environment
-  configuration using direnv.
+  configuration using direnv. `.env` is for local shell settings only,
+  while `infra/prod.tfvars` contains Terraform inputs.
 
 ### `infra/`
 
@@ -107,7 +108,7 @@ Main files include:
 - `versions.tf` – Terraform/OpenTofu version constraints
 - `backend.tf` – remote state configuration
 - `outputs.tf` – useful outputs such as service account identities
-- `github_secrets.tf` – GitHub Actions secrets managed through
+- `github_secrets.tf` – GitHub Actions variables managed through
   Terraform
 - `bigquery.tf` – example dataset provisioning
 - `DEPLOYMENT.md` – step-by-step deployment instructions
@@ -127,27 +128,48 @@ scripts/bootstrap-tf-state.sh
 
 3. Initialize Terraform/OpenTofu in the `infra/` directory.
 
-4. Create a `.tfvars` file based on the provided template and
-   configure:
+4. Copy the local environment template and the Terraform variables
+   template:
+
+```bash
+cp .env.template .env
+cp infra/prod.tfvars.template infra/prod.tfvars
+direnv allow
+```
+
+5. Update `.env` with local-only values:
+
+   - `GCP_PROJECT_ID`
+   - `GCP_REGION`
+   - `GCS_BUCKET`
+   - optional `GITHUB_TOKEN` fallback if you do not use `gh auth login`
+
+6. Update `infra/prod.tfvars` with infrastructure values:
 
    - project ID
    - project number
    - region
+   - Cloud Run service name
+   - Artifact Registry repository ID
    - GitHub repository
    - service configuration
 
-5. Copy `deploy.env.template` to `deploy.env` in the repository root,
-   update the values, and commit `deploy.env` to the repository.
-
-6. Apply the infrastructure:
+7. Apply the infrastructure:
 
 ```bash
-terraform apply
+tofu apply
 ```
 
-7. Add application source code and a `Dockerfile` to the repository.
+With `direnv` loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
+automatically use `infra/prod.tfvars`.
+If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
+and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
+GitHub user tokens expire, so rerun `gh auth login` if the refresh stops
+producing a token.
 
-8. Push to `main`.
+8. Add application source code and a `Dockerfile` to the repository.
+
+9. Push to `main`.
 
 The GitHub Actions workflow will build the container image and deploy
 it to Cloud Run.
@@ -163,6 +185,8 @@ This template assumes:
 - authentication to Google Cloud uses OIDC via Workload Identity
   Federation
 - Terraform/OpenTofu manages infrastructure
+- local shell settings come from `.env`
+- Terraform inputs come from `infra/prod.tfvars`
 
 Scope
 -----

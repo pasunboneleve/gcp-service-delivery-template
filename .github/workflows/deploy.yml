@@ -6,8 +6,14 @@ on:
       - main
 
 env:
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GCP_REGION: ${{ secrets.GCP_REGION }}
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_PROJECT_NUMBER: ${{ vars.GCP_PROJECT_NUMBER }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  GCP_WORKLOAD_IDENTITY_POOL: ${{ vars.GCP_WORKLOAD_IDENTITY_POOL }}
+  GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+  GCP_SERVICE_NAME: ${{ vars.GCP_SERVICE_NAME }}
+  GCP_REPO: ${{ vars.GCP_REPO }}
 
 jobs:
   deploy:
@@ -21,24 +27,20 @@ jobs:
 
     - name: Check configuration
       run: |
-        if [ -z "${{ secrets.GCP_PROJECT_ID }}" ]; then
-          echo "This is a template repository. Configure GCP and GitHub secrets before running CI."
+        if [ -z "${{ vars.GCP_PROJECT_ID }}" ] || [ -z "${{ vars.GCP_PROJECT_NUMBER }}" ] || [ -z "${{ vars.GCP_REGION }}" ] || [ -z "${{ vars.GCP_WORKLOAD_IDENTITY_POOL }}" ] || [ -z "${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ] || [ -z "${{ vars.GCP_SERVICE_ACCOUNT }}" ] || [ -z "${{ vars.GCP_SERVICE_NAME }}" ] || [ -z "${{ vars.GCP_REPO }}" ]; then
+          echo "This is a template repository. Configure the required GitHub Actions variables before running CI."
           exit 1
         fi
 
     - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Load deploy env
-      run: |
-        grep -v '^[[:space:]]*#' deploy.env | grep -v '^[[:space:]]*$' >> "$GITHUB_ENV"
+      uses: actions/checkout@v4
 
     - name: Google Auth
       id: auth
       uses: 'google-github-actions/auth@v2'
       with:
-        workload_identity_provider: 'projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ secrets.GCP_WORKLOAD_IDENTITY_POOL }}/providers/${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
-        service_account: '${{ secrets.GCP_SERVICE_ACCOUNT }}'
+        workload_identity_provider: 'projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.GCP_WORKLOAD_IDENTITY_POOL }}/providers/${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}'
+        service_account: '${{ env.GCP_SERVICE_ACCOUNT }}'
         audience: 'sts.googleapis.com'
 
     - name: Set up Cloud SDK
