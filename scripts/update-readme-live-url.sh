@@ -10,7 +10,14 @@ if ! command -v tofu >/dev/null 2>&1; then
   exit 1
 fi
 
-LIVE_URL="$(cd "${INFRA_DIR}" && tofu output -raw service_url 2>/dev/null || true)"
+if ! LIVE_URL="$(cd "${INFRA_DIR}" && tofu output -raw service_url 2>&1)"; then
+  if [ -n "${LIVE_URL}" ] && ! printf '%s' "${LIVE_URL}" | grep -q 'No outputs found'; then
+    echo "tofu output failed: ${LIVE_URL}" >&2
+    exit 1
+  fi
+
+  LIVE_URL=""
+fi
 
 if [ -n "${LIVE_URL}" ]; then
   LIVE_URL_LINE="- Service URL: \`${LIVE_URL}\`"

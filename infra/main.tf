@@ -161,7 +161,7 @@ resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
   count    = length(google_cloud_run_v2_service.service)
   project  = var.project_id
   location = var.region
-  name     = google_cloud_run_v2_service.service[0].name
+  name     = google_cloud_run_v2_service.service[count.index].name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
