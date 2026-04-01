@@ -4,10 +4,7 @@ locals {
   # Roles the deploy SA needs at the project level
   sa_roles = [
     "roles/run.admin",
-    "roles/iam.serviceAccountUser",
     "roles/artifactregistry.writer",
-    "roles/serviceusage.serviceUsageAdmin",
-    "roles/compute.loadBalancerAdmin",
   ]
 
   # Required APIs for the deployment pipeline

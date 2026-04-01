@@ -3,7 +3,7 @@
 This folder provisions:
 - Workload Identity Pool and Provider for GitHub OIDC
 - IAM binding to let your GitHub repo impersonate the deploy service account
-- Project roles for the deploy service account (Cloud Run, Artifact Registry, Cloud Build)
+- Least-privilege project roles for the deploy service account (Cloud Run admin and Artifact Registry writer)
 - Cloud Run service creation once the bootstrap image exists in Artifact Registry
 
 ## Prereqs

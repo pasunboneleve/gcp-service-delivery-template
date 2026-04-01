@@ -51,7 +51,7 @@ tokens expire, so rerun `gh auth login` when refresh stops yielding a token.
 The `infra/` directory contains Terraform configuration for:
 - Workload Identity Pool and Provider for GitHub OIDC authentication
 - Service account IAM bindings for deployment permissions
-- Required project-level roles: Cloud Run admin, Artifact Registry writer, Load Balancer admin
+- Required project-level roles for CI: Cloud Run admin and Artifact Registry writer
 - Cloud Run service provisioning once the bootstrap image exists in Artifact Registry
 - Global HTTP(S) Load Balancer with SSL certificates for custom domain support
 - DNS zone and records for domain management
