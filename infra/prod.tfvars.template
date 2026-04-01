@@ -11,6 +11,9 @@ region         = "example-gcp-region"
 pool_id        = "example-github-pool"
 provider_id    = "example-github-provider"
 service_name   = "example-cloud-run-service"
+container_port = 8080
 github_owner   = "example-github-owner"
 github_repo    = "example-github-repo"
-cloud_run_url  = "example-service-hash.example-region.run.app."
+
+# Optional:
+# cloud_run_image_tag = "latest"

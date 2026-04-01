@@ -38,6 +38,18 @@ variable "service_name" {
   type        = string
 }
 
+variable "container_port" {
+  description = "Container port exposed by the application."
+  type        = number
+  default     = 8080
+}
+
+variable "cloud_run_image_tag" {
+  description = "Container image tag Terraform should use when creating or recreating the Cloud Run service."
+  type        = string
+  default     = "latest"
+}
+
 variable "github_owner" {
   description = "GitHub organization or user"
   type        = string
@@ -45,10 +57,5 @@ variable "github_owner" {
 
 variable "github_repo" {
   description = "GitHub repository name"
-  type        = string
-}
-
-variable "cloud_run_url" {
-  description = "Cloud Run service URL for CNAME record. Find this in Google Cloud Console: Cloud Run > [service-name] > copy the URL from the service details page (e.g., service-name-hash.region.run.app)"
   type        = string
 }

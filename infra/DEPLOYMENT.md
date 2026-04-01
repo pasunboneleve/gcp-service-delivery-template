@@ -31,9 +31,9 @@ Define Terraform inputs in `infra/prod.tfvars`:
 - `pool_id`
 - `provider_id`
 - `service_name`
+- `container_port`
 - `github_owner`
 - `github_repo`
-- `cloud_run_url`
 
 With direnv loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
 automatically use `infra/prod.tfvars`.
@@ -59,6 +59,18 @@ tofu init -backend-config="bucket=$GCS_BUCKET" -backend-config="prefix=$GCP_PROJ
 ```bash
 tofu apply
 ```
+
+5. **Push once to publish the bootstrap image**:
+Push an application with a `Dockerfile` to `main`.
+
+6. **Apply infrastructure again**:
+```bash
+tofu apply
+../scripts/update-readme-live-url.sh
+```
+
+If `tofu output -raw service_url` is still empty after the first apply,
+the bootstrap `latest` image does not exist in Artifact Registry yet.
 
 ### Administrative Operations
 

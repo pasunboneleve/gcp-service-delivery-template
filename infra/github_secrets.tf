@@ -48,9 +48,3 @@ resource "github_actions_variable" "gcp_repo" {
   variable_name = "GCP_REPO"
   value         = var.repository_id
 }
-
-resource "github_actions_variable" "cloud_run_service_url" {
-  repository    = var.github_repo
-  variable_name = "CLOUD_RUN_SERVICE_URL"
-  value         = var.cloud_run_url
-}

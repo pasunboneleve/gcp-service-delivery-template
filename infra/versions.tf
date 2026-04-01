@@ -9,5 +9,9 @@ terraform {
       source  = "integrations/github"
       version = ">= 5.0"
     }
+    external = {
+      source  = "hashicorp/external"
+      version = ">= 2.0"
+    }
   }
 }

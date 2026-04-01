@@ -1,4 +1,6 @@
 locals {
+  cloud_run_image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repository_id}/${var.service_name}:${var.cloud_run_image_tag}"
+
   # Roles the deploy SA needs at the project level
   sa_roles = [
     "roles/run.admin",
@@ -26,6 +28,21 @@ locals {
 
   # GitHub repository selector (owner/repo)
   github_repo_attr = "${var.github_owner}/${var.github_repo}"
+}
+
+data "external" "cloud_run_image_presence" {
+  program = [
+    "bash",
+    "${path.module}/../scripts/check-artifact-registry-image.sh",
+  ]
+
+  query = {
+    project_id    = var.project_id
+    region        = var.region
+    repository_id = var.repository_id
+    image_name    = var.service_name
+    image_tag     = var.cloud_run_image_tag
+  }
 }
 
 # Enable required Google Cloud APIs
@@ -107,6 +124,46 @@ resource "google_artifact_registry_repository" "images" {
   format        = "DOCKER"
 
   depends_on = [google_project_service.apis]
+}
+
+resource "google_cloud_run_v2_service" "service" {
+  count    = data.external.cloud_run_image_presence.result.exists == "true" ? 1 : 0
+  name     = var.service_name
+  location = var.region
+  project  = var.project_id
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  template {
+    containers {
+      image = local.cloud_run_image
+
+      ports {
+        container_port = var.container_port
+      }
+    }
+  }
+
+  traffic {
+    percent = 100
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+  }
+
+  deletion_protection = false
+
+  lifecycle {
+    ignore_changes = [template[0].containers[0].image]
+  }
+
+  depends_on = [google_project_service.apis, google_artifact_registry_repository.images]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "public_invoker" {
+  count    = length(google_cloud_run_v2_service.service)
+  project  = var.project_id
+  location = var.region
+  name     = google_cloud_run_v2_service.service[0].name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }
 
 # Create the service account for GitHub Actions

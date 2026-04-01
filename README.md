@@ -1,6 +1,13 @@
 Minimal GCP Delivery Platform
 =============================
 
+Live URL
+--------
+
+<!-- LIVE_URL_START -->
+- Service URL: `TODO`
+<!-- LIVE_URL_END -->
+
 This repository defines a minimal, opinionated delivery platform for
 containerized services running on Google Cloud.
 
@@ -46,7 +53,7 @@ service delivery:
   versioning
 - Automated container build and deployment using GitHub Actions
 - Container registry provisioning using Artifact Registry
-- Cloud Run deployment workflow
+- Terraform-managed Cloud Run service with GitHub Actions image updates
 - Standard infrastructure layout for new services
 - Example BigQuery dataset provisioning
 
@@ -74,7 +81,7 @@ Build container image
 Push to Artifact Registry
       │
       ▼
-Deploy to Cloud Run
+Update Cloud Run service
 ```
 
 Infrastructure required for this workflow is provisioned using
@@ -90,11 +97,19 @@ Repository structure
 
 - `.github/workflows/deploy.yml` GitHub Actions workflow that
   authenticates to Google Cloud using OIDC, builds a container image,
-  pushes it to Artifact Registry, and deploys it to Cloud Run.
+  pushes it to Artifact Registry, and updates the existing Cloud Run
+  service.
 
 - `.env.template` and `.envrc` Local developer environment
   configuration using direnv. `.env` is for local shell settings only,
   while `infra/prod.tfvars` contains Terraform inputs.
+
+- `scripts/check-artifact-registry-image.sh` Checks whether the bootstrap
+  image tag exists so Terraform knows if it can create the Cloud Run
+  service yet.
+
+- `scripts/update-readme-live-url.sh` Updates the live URL block from
+  `tofu output`.
 
 ### `infra/`
 
@@ -169,10 +184,23 @@ producing a token.
 
 8. Add application source code and a `Dockerfile` to the repository.
 
-9. Push to `main`.
+9. Push to `main` once so GitHub Actions publishes the bootstrap `latest`
+   image to Artifact Registry.
 
-The GitHub Actions workflow will build the container image and deploy
-it to Cloud Run.
+10. Run `tofu apply` again so Terraform can create the Cloud Run service
+    from that image.
+
+11. Refresh the README live URL block:
+
+```bash
+./scripts/update-readme-live-url.sh
+```
+
+The GitHub Actions workflow will build the container image, push it to
+Artifact Registry, and update the Terraform-managed Cloud Run service.
+If `tofu output -raw service_url` is still empty after the first apply,
+the bootstrap image does not exist in Artifact Registry yet. Push once,
+rerun `tofu apply`, then update the README.
 
 Assumptions
 -----------

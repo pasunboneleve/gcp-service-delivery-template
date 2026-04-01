@@ -4,6 +4,7 @@ This folder provisions:
 - Workload Identity Pool and Provider for GitHub OIDC
 - IAM binding to let your GitHub repo impersonate the deploy service account
 - Project roles for the deploy service account (Cloud Run, Artifact Registry, Cloud Build)
+- Cloud Run service creation once the bootstrap image exists in Artifact Registry
 
 ## Prereqs
 - gcloud (authenticated to the target project)
@@ -34,6 +35,19 @@ tofu apply
 ```
 
 Outputs will include the WIF resource names.
+Useful outputs also include:
+
+- `artifact_registry_repository`
+- `cloud_run_service_name`
+- `service_url`
+
+If `service_url` is `null`, the configured bootstrap image tag does not
+exist in Artifact Registry yet. Push one image to `main`, rerun `tofu apply`,
+then update the README:
+
+```bash
+../scripts/update-readme-live-url.sh
+```
 
 `direnv` is expected to export `TF_CLI_ARGS_plan`, `TF_CLI_ARGS_apply`,
 and `TF_CLI_ARGS_destroy` so `tofu` automatically uses `infra/prod.tfvars`.
