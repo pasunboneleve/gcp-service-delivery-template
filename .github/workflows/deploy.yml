@@ -27,7 +27,14 @@ jobs:
 
     - name: Check configuration
       run: |
-        if [ -z "${{ vars.GCP_PROJECT_ID }}" ] || [ -z "${{ vars.GCP_PROJECT_NUMBER }}" ] || [ -z "${{ vars.GCP_REGION }}" ] || [ -z "${{ vars.GCP_WORKLOAD_IDENTITY_POOL }}" ] || [ -z "${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ] || [ -z "${{ vars.GCP_SERVICE_ACCOUNT }}" ] || [ -z "${{ vars.GCP_SERVICE_NAME }}" ] || [ -z "${{ vars.GCP_REPO }}" ]; then
+        if [ -z "${{ vars.GCP_PROJECT_ID }}" ] || \
+           [ -z "${{ vars.GCP_PROJECT_NUMBER }}" ] || \
+           [ -z "${{ vars.GCP_REGION }}" ] || \
+           [ -z "${{ vars.GCP_WORKLOAD_IDENTITY_POOL }}" ] || \
+           [ -z "${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ] || \
+           [ -z "${{ vars.GCP_SERVICE_ACCOUNT }}" ] || \
+           [ -z "${{ vars.GCP_SERVICE_NAME }}" ] || \
+           [ -z "${{ vars.GCP_REPO }}" ]; then
           echo "This is a template repository. Configure the required GitHub Actions variables before running CI."
           exit 1
         fi
