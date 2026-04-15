@@ -25,8 +25,8 @@ tofu init
 ```
 
 ## 3) Apply
-Load `.env` through `direnv` so the repo can render local Terraform
-config from environment variables:
+Load `.env` through `direnv` so the repo can export Terraform inputs
+and render local backend config from environment variables:
 ```bash
 cp ../.env.template ../.env
 direnv allow

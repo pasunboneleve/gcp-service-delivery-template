@@ -12,8 +12,6 @@ infra/*.tfstate
 infra/*.tfstate.*
 infra/.terraform.lock.hcl
 infra/terraform.tfvars
-infra/prod.tfvars
-infra/dev.tfvars
 infra/*.auto.tfvars
 infra/*.auto.tfvars.json
 

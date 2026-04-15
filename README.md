@@ -142,16 +142,14 @@ Typical setup process:
 scripts/bootstrap-tf-state.sh
 ```
 
-3. Initialize Terraform/OpenTofu in the `infra/` directory.
-
-4. Copy the local environment template:
+3. Copy the local environment template:
 
 ```bash
 cp .env.template .env
 direnv allow
 ```
 
-5. Update `.env` with deployment values:
+4. Update `.env` with deployment values:
 
    - `GCP_OWNER`
    - `GCP_PROJECT_ID`
@@ -169,6 +167,13 @@ direnv allow
    `direnv` exports these values as `TF_VAR_*` variables and renders
    `infra/backend.auto.hcl` automatically.
 
+5. Initialize Terraform/OpenTofu in the `infra/` directory:
+
+```bash
+cd infra
+tofu init
+```
+
 6. Apply the infrastructure:
 
 ```bash
@@ -184,15 +189,15 @@ and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` if the refresh stops
 producing a token.
 
-8. Add application source code and a `Dockerfile` to the repository.
+7. Add application source code and a `Dockerfile` to the repository.
 
-9. Push to `main` once so GitHub Actions publishes the bootstrap `latest`
+8. Push to `main` once so GitHub Actions publishes the bootstrap `latest`
    image to Artifact Registry.
 
-10. Run `tofu apply` again so Terraform can create the Cloud Run service
+9. Run `tofu apply` again so Terraform can create the Cloud Run service
     from that image.
 
-11. Refresh the README live URL block:
+10. Refresh the README live URL block:
 
 ```bash
 ./scripts/update-readme-live-url.sh

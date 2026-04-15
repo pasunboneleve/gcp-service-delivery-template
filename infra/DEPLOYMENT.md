@@ -39,26 +39,26 @@ producing a token.
 
 ### Initial Infrastructure Setup
 
-2. **Bootstrap GCS backend** (one-time):
+1. **Bootstrap GCS backend** (one-time):
 ```bash
 ./scripts/bootstrap-tf-state.sh
 ```
 
-3. **Initialize OpenTofu**:
+2. **Initialize OpenTofu**:
 ```bash
 cd infra
 tofu init
 ```
 
-4. **Apply infrastructure**:
+3. **Apply infrastructure**:
 ```bash
 tofu apply
 ```
 
-5. **Push once to publish the bootstrap image**:
+4. **Push once to publish the bootstrap image**:
 Push an application with a `Dockerfile` to `main`.
 
-6. **Apply infrastructure again**:
+5. **Apply infrastructure again**:
 ```bash
 tofu apply
 ../scripts/update-readme-live-url.sh
