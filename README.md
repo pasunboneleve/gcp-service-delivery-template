@@ -101,8 +101,9 @@ Repository structure
   service.
 
 - `.env.template` and `.envrc` Local developer environment
-  configuration using direnv. `.env` is for local shell settings only,
-  while `infra/prod.tfvars` contains Terraform inputs.
+  configuration using direnv. `.env` is the local source of truth for
+  Terraform inputs and backend settings; `.envrc` renders generated
+  Terraform config files from it.
 
 - `scripts/check-artifact-registry-image.sh` Checks whether the bootstrap
   image tag exists so Terraform knows if it can create the Cloud Run
@@ -143,40 +144,40 @@ scripts/bootstrap-tf-state.sh
 
 3. Initialize Terraform/OpenTofu in the `infra/` directory.
 
-4. Copy the local environment template and the Terraform variables
-   template:
+4. Copy the local environment template:
 
 ```bash
 cp .env.template .env
-cp infra/prod.tfvars.template infra/prod.tfvars
 direnv allow
 ```
 
-5. Update `.env` with local-only values:
+5. Update `.env` with deployment values:
 
+   - `GCP_OWNER`
    - `GCP_PROJECT_ID`
+   - `GCP_PROJECT_NUMBER`
    - `GCP_REGION`
    - `GCS_BUCKET`
+   - `GCP_REPOSITORY_ID`
+   - `GCP_WORKLOAD_IDENTITY_POOL`
+   - `GCP_WORKLOAD_IDENTITY_PROVIDER`
+   - `GCP_SERVICE_NAME`
+   - `GITHUB_OWNER`
+   - `GITHUB_REPO`
    - optional `GITHUB_TOKEN` fallback if you do not use `gh auth login`
 
-6. Update `infra/prod.tfvars` with infrastructure values:
+   `direnv` renders `infra/local.auto.tfvars` and
+   `infra/backend.auto.hcl` from these values automatically.
 
-   - project ID
-   - project number
-   - region
-   - Cloud Run service name
-   - Artifact Registry repository ID
-   - GitHub repository
-   - service configuration
-
-7. Apply the infrastructure:
+6. Apply the infrastructure:
 
 ```bash
 tofu apply
 ```
 
-With `direnv` loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
-automatically use `infra/prod.tfvars`.
+With `direnv` loaded, `tofu plan`, `tofu apply`, `tofu destroy`, and
+`dress` automatically use the generated Terraform config derived from
+`.env`.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` if the refresh stops
@@ -213,8 +214,8 @@ This template assumes:
 - authentication to Google Cloud uses OIDC via Workload Identity
   Federation
 - Terraform/OpenTofu manages infrastructure
-- local shell settings come from `.env`
-- Terraform inputs come from `infra/prod.tfvars`
+- local deployment settings come from `.env`
+- Terraform inputs and backend config are generated from `.env`
 
 Scope
 -----

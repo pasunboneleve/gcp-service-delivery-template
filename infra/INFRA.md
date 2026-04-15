@@ -27,10 +27,11 @@ tofu init \
 ```
 
 ## 3) Apply
-Copy `prod.tfvars.template` to `prod.tfvars` and set values matching your
-environment:
+Load `.env` through `direnv` so the repo can render local Terraform
+config from environment variables:
 ```bash
-cp prod.tfvars.template prod.tfvars
+cp ../.env.template ../.env
+direnv allow
 tofu apply
 ```
 
@@ -49,8 +50,10 @@ then update the README:
 ../scripts/update-readme-live-url.sh
 ```
 
-`direnv` is expected to export `TF_CLI_ARGS_plan`, `TF_CLI_ARGS_apply`,
-and `TF_CLI_ARGS_destroy` so `tofu` automatically uses `infra/prod.tfvars`.
+`direnv` exports `TF_CLI_ARGS_plan`, `TF_CLI_ARGS_apply`,
+`TF_CLI_ARGS_destroy`, and `TF_CLI_ARGS_import`, and renders
+`infra/local.auto.tfvars` plus `infra/backend.auto.hcl` so `tofu`
+and `dress` use environment-derived config by default.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` when refresh stops

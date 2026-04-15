@@ -13,7 +13,6 @@ Run `bd prime` for workflow context.
 Set required environment variables first:
 ```bash
 cp .env.template .env
-cp infra/prod.tfvars.template infra/prod.tfvars
 direnv allow
 ```
 

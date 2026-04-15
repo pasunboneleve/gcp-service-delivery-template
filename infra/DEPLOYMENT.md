@@ -10,33 +10,28 @@
 
 ```bash
 cp .env.template .env
-cp infra/prod.tfvars.template infra/prod.tfvars
 direnv allow
 ```
 
-Define local shell-only values in `.env`:
+Define deployment values in `.env`:
 
+- `GCP_OWNER`
 - `GCP_PROJECT_ID`
+- `GCP_PROJECT_NUMBER`
 - `GCP_REGION`
 - `GCS_BUCKET`
+- `GCP_REPOSITORY_ID`
+- `GCP_WORKLOAD_IDENTITY_POOL`
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_NAME`
+- `GITHUB_OWNER`
+- `GITHUB_REPO`
 - optional `GITHUB_TOKEN` fallback
 
-Define Terraform inputs in `infra/prod.tfvars`:
-
-- `gcp_owner`
-- `repository_id`
-- `project_id`
-- `project_number`
-- `region`
-- `pool_id`
-- `provider_id`
-- `service_name`
-- `container_port`
-- `github_owner`
-- `github_repo`
-
-With direnv loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
-automatically use `infra/prod.tfvars`.
+`direnv` renders `infra/local.auto.tfvars` and
+`infra/backend.auto.hcl` from those values. With direnv loaded,
+`tofu plan`, `tofu apply`, `tofu destroy`, and `dress` automatically
+use the generated files.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` when refresh stops
