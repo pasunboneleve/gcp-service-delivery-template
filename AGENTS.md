@@ -13,7 +13,6 @@ Run `bd prime` for workflow context.
 Set required environment variables first:
 ```bash
 cp .env.template .env
-cp infra/prod.tfvars.template infra/prod.tfvars
 direnv allow
 ```
 
@@ -26,7 +25,7 @@ Bootstrap Terraform state (one-time):
 Apply infrastructure:
 ```bash
 cd infra
-tofu init -backend-config="bucket={{GCS_BUCKET}}" -backend-config="prefix={{GCP_PROJECT_ID}}/infra"
+tofu init
 tofu apply
 ```
 

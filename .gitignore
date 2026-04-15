@@ -12,9 +12,8 @@ infra/*.tfstate
 infra/*.tfstate.*
 infra/.terraform.lock.hcl
 infra/terraform.tfvars
-infra/prod.tfvars
-infra/dev.tfvars
 infra/*.auto.tfvars
+infra/*.auto.tfvars.json
 
 # Service account keys (if any)
 *.json
@@ -42,6 +41,9 @@ infra/*.auto.tfvars
 # Local Codex workspace metadata
 .codex
 .codex/
+
+# Generated local Terraform config
+infra/backend.auto.hcl
 
 # dress-rehearsal runs
 **/.dress-runs

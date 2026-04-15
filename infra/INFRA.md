@@ -21,16 +21,15 @@ export GCS_BUCKET=<globally-unique-bucket-name>
 ## 2) Init with GCS backend
 ```bash
 cd infra
-tofu init \
-  -backend-config="bucket=$GCS_BUCKET" \
-  -backend-config="prefix=$GCP_PROJECT_ID/infra"
+tofu init
 ```
 
 ## 3) Apply
-Copy `prod.tfvars.template` to `prod.tfvars` and set values matching your
-environment:
+Load `.env` through `direnv` so the repo can export Terraform inputs
+and render local backend config from environment variables:
 ```bash
-cp prod.tfvars.template prod.tfvars
+cp ../.env.template ../.env
+direnv allow
 tofu apply
 ```
 
@@ -49,8 +48,9 @@ then update the README:
 ../scripts/update-readme-live-url.sh
 ```
 
-`direnv` is expected to export `TF_CLI_ARGS_plan`, `TF_CLI_ARGS_apply`,
-and `TF_CLI_ARGS_destroy` so `tofu` automatically uses `infra/prod.tfvars`.
+`direnv` renders `infra/backend.auto.hcl` and exports Terraform inputs
+via `TF_VAR_*` so `tofu` and `dress` use environment-derived config by
+default.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` when refresh stops

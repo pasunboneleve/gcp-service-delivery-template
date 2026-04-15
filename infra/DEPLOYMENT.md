@@ -10,33 +10,28 @@
 
 ```bash
 cp .env.template .env
-cp infra/prod.tfvars.template infra/prod.tfvars
 direnv allow
 ```
 
-Define local shell-only values in `.env`:
+Define deployment values in `.env`:
 
+- `GCP_OWNER`
 - `GCP_PROJECT_ID`
+- `GCP_PROJECT_NUMBER`
 - `GCP_REGION`
 - `GCS_BUCKET`
+- `GCP_REPOSITORY_ID`
+- `GCP_WORKLOAD_IDENTITY_POOL`
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_NAME`
+- `GITHUB_OWNER`
+- `GITHUB_REPO`
 - optional `GITHUB_TOKEN` fallback
 
-Define Terraform inputs in `infra/prod.tfvars`:
-
-- `gcp_owner`
-- `repository_id`
-- `project_id`
-- `project_number`
-- `region`
-- `pool_id`
-- `provider_id`
-- `service_name`
-- `container_port`
-- `github_owner`
-- `github_repo`
-
-With direnv loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
-automatically use `infra/prod.tfvars`.
+`direnv` exports those values as `TF_VAR_*` and renders
+`infra/backend.auto.hcl`. With direnv loaded, `tofu plan`, `tofu apply`,
+`tofu destroy`, and `dress` automatically use the environment-backed
+Terraform inputs plus the generated backend config.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` when refresh stops
@@ -44,26 +39,26 @@ producing a token.
 
 ### Initial Infrastructure Setup
 
-2. **Bootstrap GCS backend** (one-time):
+1. **Bootstrap GCS backend** (one-time):
 ```bash
 ./scripts/bootstrap-tf-state.sh
 ```
 
-3. **Initialize OpenTofu**:
+2. **Initialize OpenTofu**:
 ```bash
 cd infra
-tofu init -backend-config="bucket=$GCS_BUCKET" -backend-config="prefix=$GCP_PROJECT_ID/infra"
+tofu init
 ```
 
-4. **Apply infrastructure**:
+3. **Apply infrastructure**:
 ```bash
 tofu apply
 ```
 
-5. **Push once to publish the bootstrap image**:
+4. **Push once to publish the bootstrap image**:
 Push an application with a `Dockerfile` to `main`.
 
-6. **Apply infrastructure again**:
+5. **Apply infrastructure again**:
 ```bash
 tofu apply
 ../scripts/update-readme-live-url.sh

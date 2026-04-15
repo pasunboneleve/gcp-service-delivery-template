@@ -101,8 +101,9 @@ Repository structure
   service.
 
 - `.env.template` and `.envrc` Local developer environment
-  configuration using direnv. `.env` is for local shell settings only,
-  while `infra/prod.tfvars` contains Terraform inputs.
+  configuration using direnv. `.env` is the local source of truth for
+  Terraform inputs and backend settings; `.envrc` exports Terraform
+  variables and renders backend config from it.
 
 - `scripts/check-artifact-registry-image.sh` Checks whether the bootstrap
   image tag exists so Terraform knows if it can create the Cloud Run
@@ -141,56 +142,62 @@ Typical setup process:
 scripts/bootstrap-tf-state.sh
 ```
 
-3. Initialize Terraform/OpenTofu in the `infra/` directory.
-
-4. Copy the local environment template and the Terraform variables
-   template:
+3. Copy the local environment template:
 
 ```bash
 cp .env.template .env
-cp infra/prod.tfvars.template infra/prod.tfvars
 direnv allow
 ```
 
-5. Update `.env` with local-only values:
+4. Update `.env` with deployment values:
 
+   - `GCP_OWNER`
    - `GCP_PROJECT_ID`
+   - `GCP_PROJECT_NUMBER`
    - `GCP_REGION`
    - `GCS_BUCKET`
+   - `GCP_REPOSITORY_ID`
+   - `GCP_WORKLOAD_IDENTITY_POOL`
+   - `GCP_WORKLOAD_IDENTITY_PROVIDER`
+   - `GCP_SERVICE_NAME`
+   - `GITHUB_OWNER`
+   - `GITHUB_REPO`
    - optional `GITHUB_TOKEN` fallback if you do not use `gh auth login`
 
-6. Update `infra/prod.tfvars` with infrastructure values:
+   `direnv` exports these values as `TF_VAR_*` variables and renders
+   `infra/backend.auto.hcl` automatically.
 
-   - project ID
-   - project number
-   - region
-   - Cloud Run service name
-   - Artifact Registry repository ID
-   - GitHub repository
-   - service configuration
+5. Initialize Terraform/OpenTofu in the `infra/` directory:
 
-7. Apply the infrastructure:
+```bash
+cd infra
+tofu init
+```
+
+6. Apply the infrastructure:
 
 ```bash
 tofu apply
 ```
 
-With `direnv` loaded, `tofu plan`, `tofu apply`, and `tofu destroy`
-automatically use `infra/prod.tfvars`.
+With `direnv` loaded, `tofu plan`, `tofu apply`, `tofu destroy`, and
+`dress` automatically use Terraform input values from the environment and
+backend config derived from `.env`.
+`tofu init` also uses the generated backend config automatically.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` if the refresh stops
 producing a token.
 
-8. Add application source code and a `Dockerfile` to the repository.
+7. Add application source code and a `Dockerfile` to the repository.
 
-9. Push to `main` once so GitHub Actions publishes the bootstrap `latest`
+8. Push to `main` once so GitHub Actions publishes the bootstrap `latest`
    image to Artifact Registry.
 
-10. Run `tofu apply` again so Terraform can create the Cloud Run service
+9. Run `tofu apply` again so Terraform can create the Cloud Run service
     from that image.
 
-11. Refresh the README live URL block:
+10. Refresh the README live URL block:
 
 ```bash
 ./scripts/update-readme-live-url.sh
@@ -213,8 +220,9 @@ This template assumes:
 - authentication to Google Cloud uses OIDC via Workload Identity
   Federation
 - Terraform/OpenTofu manages infrastructure
-- local shell settings come from `.env`
-- Terraform inputs come from `infra/prod.tfvars`
+- local deployment settings come from `.env`
+- Terraform inputs come from `TF_VAR_*` exported by `.envrc`
+- backend config comes from `infra/backend.auto.hcl`
 
 Scope
 -----
