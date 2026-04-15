@@ -102,8 +102,8 @@ Repository structure
 
 - `.env.template` and `.envrc` Local developer environment
   configuration using direnv. `.env` is the local source of truth for
-  Terraform inputs and backend settings; `.envrc` renders generated
-  Terraform config files from it.
+  Terraform inputs and backend settings; `.envrc` exports Terraform
+  variables and renders backend config from it.
 
 - `scripts/check-artifact-registry-image.sh` Checks whether the bootstrap
   image tag exists so Terraform knows if it can create the Cloud Run
@@ -166,8 +166,8 @@ direnv allow
    - `GITHUB_REPO`
    - optional `GITHUB_TOKEN` fallback if you do not use `gh auth login`
 
-   `direnv` renders `infra/local.auto.tfvars` and
-   `infra/backend.auto.hcl` from these values automatically.
+   `direnv` exports these values as `TF_VAR_*` variables and renders
+   `infra/backend.auto.hcl` automatically.
 
 6. Apply the infrastructure:
 
@@ -176,8 +176,8 @@ tofu apply
 ```
 
 With `direnv` loaded, `tofu plan`, `tofu apply`, `tofu destroy`, and
-`dress` automatically use the generated Terraform config derived from
-`.env`.
+`dress` automatically use Terraform input values from the environment and
+backend config derived from `.env`.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` if the refresh stops
@@ -215,7 +215,8 @@ This template assumes:
   Federation
 - Terraform/OpenTofu manages infrastructure
 - local deployment settings come from `.env`
-- Terraform inputs and backend config are generated from `.env`
+- Terraform inputs come from `TF_VAR_*` exported by `.envrc`
+- backend config comes from `infra/backend.auto.hcl`
 
 Scope
 -----

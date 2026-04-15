@@ -50,10 +50,9 @@ then update the README:
 ../scripts/update-readme-live-url.sh
 ```
 
-`direnv` exports `TF_CLI_ARGS_plan`, `TF_CLI_ARGS_apply`,
-`TF_CLI_ARGS_destroy`, and `TF_CLI_ARGS_import`, and renders
-`infra/local.auto.tfvars` plus `infra/backend.auto.hcl` so `tofu`
-and `dress` use environment-derived config by default.
+`direnv` renders `infra/backend.auto.hcl` and exports Terraform inputs
+via `TF_VAR_*` so `tofu` and `dress` use environment-derived config by
+default.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` when refresh stops

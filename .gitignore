@@ -44,7 +44,6 @@ infra/*.auto.tfvars
 .codex/
 
 # Generated local Terraform config
-infra/local.auto.tfvars
 infra/backend.auto.hcl
 
 # dress-rehearsal runs

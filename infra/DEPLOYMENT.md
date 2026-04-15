@@ -28,10 +28,10 @@ Define deployment values in `.env`:
 - `GITHUB_REPO`
 - optional `GITHUB_TOKEN` fallback
 
-`direnv` renders `infra/local.auto.tfvars` and
-`infra/backend.auto.hcl` from those values. With direnv loaded,
-`tofu plan`, `tofu apply`, `tofu destroy`, and `dress` automatically
-use the generated files.
+`direnv` exports those values as `TF_VAR_*` and renders
+`infra/backend.auto.hcl`. With direnv loaded, `tofu plan`, `tofu apply`,
+`tofu destroy`, and `dress` automatically use the environment-backed
+Terraform inputs plus the generated backend config.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` when refresh stops
