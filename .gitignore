@@ -42,3 +42,6 @@ infra/*.auto.tfvars
 # Local Codex workspace metadata
 .codex
 .codex/
+
+# dress-rehearsal runs
+**/.dress-runs
