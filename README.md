@@ -178,6 +178,7 @@ tofu apply
 With `direnv` loaded, `tofu plan`, `tofu apply`, `tofu destroy`, and
 `dress` automatically use Terraform input values from the environment and
 backend config derived from `.env`.
+`tofu init` also uses the generated backend config automatically.
 If GitHub CLI authentication is configured, `direnv allow`, `direnv reload`,
 and `direnv refresh` also refresh `GITHUB_TOKEN` from `gh auth token`.
 GitHub user tokens expire, so rerun `gh auth login` if the refresh stops
